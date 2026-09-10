@@ -164,11 +164,17 @@ def fetch_xlsx(a, b):
 def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     mp = os.path.join(root, 'data', 'meta.json')
+    start = None
+    esperado = sorted(u.replace('CARTAO DE ', '').strip() for u in UNITS)
     if os.path.exists(mp):
-        start = dt.date.fromisoformat(json.load(open(mp, encoding='utf-8'))['periodo']['fim'])
-    else:
+        m = json.load(open(mp, encoding='utf-8'))
+        if sorted(m.get('unidades', [])) == esperado:
+            start = dt.date.fromisoformat(m['periodo']['fim'])
+        else:
+            print('A base existente é de outras unidades (%s) — recomeçando o histórico.' % ', '.join(m.get('unidades', [])))
+    if start is None:
         start = dt.date.fromisoformat(CFG.get('inicio', '2026-01-01'))
-        print('Base ainda não existe — baixando histórico completo desde', start)
+        print('Baixando histórico completo desde', start)
     today = now_br().date()  # Brasília
     if start > today:
         start = today
