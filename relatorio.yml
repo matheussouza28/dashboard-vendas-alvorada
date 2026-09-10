@@ -1,0 +1,77 @@
+name: Enviar relatório de vendas no WhatsApp
+
+on:
+  schedule:
+    # Horário de Brasília = UTC-3. Fechamento do dia anterior às 08:10; parciais às 10:10, 12:10, 15:10, 17:10, 19:10 e 21:10
+    - cron: '10 11 * * *'
+    - cron: '10 13,15,18,20,22 * * *'
+    - cron: '10 0 * * *'
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'fechamento (dia anterior) ou dia (parcial de hoje)'
+        default: 'dia'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar
+  cancel-in-progress: false
+
+jobs:
+  relatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: |
+          pip install --quiet requests openpyxl pandas playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Definir modo (08h = fechamento do dia anterior)
+        id: modo
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "modo=${{ github.event.inputs.modo }}" >> $GITHUB_OUTPUT
+          elif [ "$(TZ=America/Sao_Paulo date +%H)" = "08" ]; then
+            echo "modo=fechamento" >> $GITHUB_OUTPUT
+          else
+            echo "modo=dia" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Baixar vendas do CTN
+        env:
+          CTN_COOKIE: ${{ secrets.CTN_COOKIE }}
+          MINHACONTA_COOKIE: ${{ secrets.MINHACONTA_COOKIE }}
+        run: python scripts/ctn_fetch.py
+
+      - name: Regenerar dashboard
+        run: python build.py src --repo .
+
+      - name: Gerar e enviar relatório
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+        run: python scripts/enviar_relatorio.py ${{ steps.modo.outputs.modo }}
+
+      - name: Guardar imagens (7 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-${{ steps.modo.outputs.modo }}-${{ github.run_id }}
+          path: out/*.png
+          retention-days: 7
+
+      - name: Publicar base e relatório
+        run: |
+          rm -rf src out
+          git config user.name "Atualização automática"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Relatório ${{ steps.modo.outputs.modo }} $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M')"
+          git push
