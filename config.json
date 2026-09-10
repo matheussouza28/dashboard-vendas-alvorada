@@ -1,0 +1,11 @@
+{
+  "titulo": "Dashboard de Vendas — Cartão de Todos",
+  "unidades": ["CARTAO DE BELEM CENTRO", "CARTAO DE MANAUS CENTRO", "CARTAO DE MANAUS NORTE", "CARTAO DE OSASCO", "CARTAO DE PARINTINS", "CARTAO DE PORTO ALEGRE NORTE"],
+  "sub_franquia": "5",
+  "inicio": "2026-01-01",
+  "grupos_relatorio": [
+    {"nome": "5 unidades", "titulo": "Relatório de Vendas", "unidades": ["BELEM CENTRO", "MANAUS CENTRO", "MANAUS NORTE", "PARINTINS", "PORTO ALEGRE NORTE"], "meta_semana": 1000, "arquivo": "relatorio_5_unidades.png"},
+    {"nome": "Osasco", "titulo": "Relatório de Vendas Osasco", "unidades": ["OSASCO"], "meta_semana": 250, "arquivo": "relatorio_osasco.png"}
+  ],
+  "repo": "matheussouza28/dashboard-vendas-cdt"
+}
