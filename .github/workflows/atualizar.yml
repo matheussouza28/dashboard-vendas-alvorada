@@ -41,9 +41,9 @@ jobs:
           rm -rf src
           git config user.name "Atualização automática"
           git config user.email "actions@users.noreply.github.com"
-          if git diff --quiet -- data/base_vendas.csv; then
+          if [ -z "$(git status --porcelain -- data/base_vendas.csv)" ]; then
             echo "Nenhuma venda nova; nada a publicar."
-            git checkout -- .
+            git checkout -- . ; git clean -fd data 2>/dev/null || true
           else
             git add -A
             git commit -m "Atualização automática $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M')"
