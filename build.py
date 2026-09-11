@@ -10,9 +10,6 @@ import pandas as pd
 src = sys.argv[1]
 repo = sys.argv[sys.argv.index('--repo')+1] if '--repo' in sys.argv else os.path.dirname(os.path.abspath(__file__))
 datadir = os.path.join(repo, 'data'); os.makedirs(datadir, exist_ok=True)
-cfgp = os.path.join(repo, 'config.json')
-cfg = json.load(open(cfgp, encoding='utf-8')) if os.path.exists(cfgp) else {}
-CFG_UNITS = [u.replace('CARTAO DE ', '').strip() for u in cfg.get('unidades', [])]
 COLS = ['Franquia','Matricula','Filiado','Telefone','Nome','Data','Vendedor','Login','Prospeccao']
 
 def parse_dates(s):
@@ -29,11 +26,6 @@ if os.path.exists(old):
 for f in sorted(glob.glob(os.path.join(src, '*.csv'))):
     frames.append(pd.read_csv(f, dtype=str, encoding='utf-8-sig'))
 df = pd.concat(frames, ignore_index=True)[COLS]
-if CFG_UNITS:
-    antes = len(df)
-    df = df[df.Franquia.isin(CFG_UNITS)]
-    if len(df) != antes:
-        print('Descartadas %d linhas de unidades fora do config.json (%s)' % (antes - len(df), ', '.join(CFG_UNITS)))
 df['DataHora'] = parse_dates(df['Data'])
 df = df.dropna(subset=['DataHora'])
 df = df.sort_values(['DataHora','Matricula']).drop_duplicates(['Matricula'], keep='last')
@@ -49,6 +41,8 @@ daily.to_csv(os.path.join(datadir,'resumo_diario.csv'), index=False)
 vend.to_csv(os.path.join(datadir,'por_vendedor.csv'), index=False)
 
 units = sorted(df.Franquia.unique().tolist())
+cfgp = os.path.join(repo, 'config.json')
+cfg = json.load(open(cfgp, encoding='utf-8')) if os.path.exists(cfgp) else {}
 last = df.Dia.max(); cutoff = (pd.Timestamp(last) - pd.Timedelta(days=13)).strftime('%Y-%m-%d')
 rec = d[d.Dia >= cutoff]
 recent = [[r.Dia, r.Franquia, int(r.DataHora.hour), r.Vendedor, int(r.fil)] for r in rec.itertuples()]
@@ -62,6 +56,7 @@ payload = {
   'hoje': (dt.datetime.utcnow()-dt.timedelta(hours=3)).strftime('%Y-%m-%d'),
   'titulo': cfg.get('titulo', 'Dashboard de Vendas — Cartão de Todos'),
   'grupos': cfg.get('grupos_relatorio', []),
+  'repo': cfg.get('repo', ''),
 }
 json.dump({k:v for k,v in payload.items() if k not in ('daily','vend','recent','grupos')}, open(os.path.join(datadir,'meta.json'),'w'), ensure_ascii=False, indent=1)
 tpl = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template.html'), encoding='utf-8').read()
