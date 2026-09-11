@@ -128,6 +128,17 @@ body.mode-report #report{display:block}
 .rep .banner{margin:20px 26px 0;border-radius:10px;padding:18px;text-align:center;font-size:22px;font-weight:700;background:#b32a2a}
 .rep .banner.ok{background:#1e9e4a}
 .rep .foot{margin:14px 26px 0;font-size:12px;opacity:.6;text-align:right}
+
+.btn-reload{font:inherit;font-size:13px;background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600}
+.btn-reload[disabled]{opacity:.6;cursor:default}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal-box{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:18px;max-width:460px;width:100%}
+.modal-box h3{margin:0 0 8px;font-size:15px}
+.modal-box p{margin:0 0 10px;font-size:13px;color:var(--text-2);line-height:1.5}
+.modal-box input{width:100%;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.modal-actions button{font:inherit;font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer}
+.modal-actions button.primary{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:600}
 </style>
 </head>
 <body>
@@ -146,7 +157,20 @@ body.mode-report #report{display:block}
     <button type="button" data-preset="prev">Mês anterior</button>
     <button type="button" data-preset="30">Últimos 30 dias</button>
     <button type="button" data-preset="ytd">Ano 2026</button>
+    <button type="button" class="btn-reload" id="btn-reload" title="Buscar as vendas mais recentes no CTN">&#8635; Atualizar agora</button>
+    <span class="small" id="reload-msg"></span>
   </div>
+  <div class="modal hidden" id="tok-modal"><div class="modal-box">
+    <h3>Ativar o bot&#227;o &#8220;Atualizar agora&#8221;</h3>
+    <p>Para disparar a atualiza&#231;&#227;o daqui, cole um token do GitHub com permiss&#227;o de <b>Actions</b> neste reposit&#243;rio. Ele fica salvo <b>s&#243; neste navegador</b> &#8212; n&#227;o vai para o site nem para o reposit&#243;rio.</p>
+    <p><a id="tok-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Criar token</a> &#183; Fine-grained &#183; Repository access: apenas este reposit&#243;rio &#183; Permissions &#8594; Actions: <b>Read and write</b>.</p>
+    <input type="password" id="tok-input" placeholder="github_pat_... ou ghp_..." autocomplete="off">
+    <div class="modal-actions">
+      <button type="button" id="tok-cancel">Cancelar</button>
+      <button type="button" id="tok-open">Abrir no GitHub</button>
+      <button type="button" class="primary" id="tok-save">Salvar e atualizar</button>
+    </div>
+  </div></div>
   <section class="kpis" id="kpis"></section>
   <div class="grid two">
     <div class="card">
@@ -450,6 +474,66 @@ function renderUnits(rows,prows,pr){
   wrap.appendChild(t);
 }
 render();
+
+// ---------- botão "Atualizar agora" ----------
+const REPO_SLUG=(function(){
+  const m=location.hostname.match(/^([^.]+)\.github\.io$/);
+  const seg=location.pathname.split('/').filter(Boolean)[0];
+  if(m&&seg) return m[1]+'/'+seg;
+  return D.repo||'';
+})();
+const WF_FILE='atualizar.yml';
+const btnR=document.getElementById('btn-reload'), msgR=document.getElementById('reload-msg');
+const modal=document.getElementById('tok-modal'), tokInput=document.getElementById('tok-input');
+const wfUrl=REPO_SLUG?('https://github.com/'+REPO_SLUG+'/actions/workflows/'+WF_FILE):'https://github.com';
+function getTok(){try{return localStorage.getItem('gh_token')||''}catch(e){return ''}}
+function setTok(v){try{v?localStorage.setItem('gh_token',v):localStorage.removeItem('gh_token')}catch(e){}}
+// O botão só aparece para quem ativou: abra a página uma vez com #admin no fim
+// do endereço. Fica gravado neste navegador; para os demais nem existe.
+(function(){
+  let adm=false;
+  try{
+    if(location.hash.toLowerCase().indexOf('admin')>=0){localStorage.setItem('gh_admin','1');history.replaceState(null,'',location.pathname+location.search);}
+    adm=localStorage.getItem('gh_admin')==='1'||!!localStorage.getItem('gh_token');
+  }catch(e){ adm=location.hash.toLowerCase().indexOf('admin')>=0; }
+  if(!adm){btnR.style.display='none';msgR.style.display='none';}
+})();
+function say(t,cor){msgR.textContent=t;msgR.style.color=cor||'';}
+document.getElementById('tok-cancel').onclick=()=>modal.classList.add('hidden');
+document.getElementById('tok-open').onclick=()=>{modal.classList.add('hidden');window.open(wfUrl,'_blank','noopener');};
+document.getElementById('tok-save').onclick=()=>{const v=tokInput.value.trim();if(!v)return;setTok(v);modal.classList.add('hidden');tokInput.value='';disparar();};
+btnR.onclick=()=>{ if(!REPO_SLUG){window.open(wfUrl,'_blank','noopener');return;} if(!getTok()){modal.classList.remove('hidden');tokInput.focus();return;} disparar(); };
+async function disparar(){
+  const t=getTok();
+  btnR.disabled=true; say('Enviando pedido ao GitHub…');
+  try{
+    const r=await fetch('https://api.github.com/repos/'+REPO_SLUG+'/actions/workflows/'+WF_FILE+'/dispatches',{
+      method:'POST',
+      headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+t,'X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+      body:JSON.stringify({ref:'main'})
+    });
+    if(r.status===204){ say('Atualizando… isso leva de 1 a 2 minutos.'); aguardar(); return; }
+    if(r.status===401||r.status===403||r.status===404){
+      setTok('');
+      say('Token inválido ou sem permissão. Cadastre de novo.','var(--bad)');
+      btnR.disabled=false; modal.classList.remove('hidden'); return;
+    }
+    say('O GitHub respondeu '+r.status+'. Tente pelo botão “Abrir no GitHub”.','var(--bad)');
+    btnR.disabled=false;
+  }catch(e){ say('Não consegui falar com o GitHub: '+e.message,'var(--bad)'); btnR.disabled=false; }
+}
+function aguardar(){
+  const antes=D.atualizado_em, ini=Date.now();
+  const meta=(location.protocol==='file:'&&REPO_SLUG)?('https://raw.githubusercontent.com/'+REPO_SLUG+'/main/data/meta.json'):'data/meta.json';
+  const timer=setInterval(async()=>{
+    if(Date.now()-ini>6*60*1000){ clearInterval(timer); say('Demorou mais que o esperado. Recarregue em alguns minutos.','var(--bad)'); btnR.disabled=false; return; }
+    try{
+      const r=await fetch(meta+'?t='+Date.now(),{cache:'no-store'});
+      const m=await r.json();
+      if(m.atualizado_em&&m.atualizado_em!==antes){ clearInterval(timer); say('Pronto! Recarregando…'); setTimeout(()=>location.reload(),800); }
+    }catch(e){}
+  },15000);
+}
 
 // ---------- relatório do dia ----------
 const GRUPOS=(D.grupos&&D.grupos.length)?D.grupos:[{nome:'5 unidades',titulo:'Relatório de Vendas',unidades:UNITS.filter(u=>u!=='OSASCO'),meta_semana:1000},{nome:'Osasco',titulo:'Relatório de Vendas Osasco',unidades:['OSASCO'],meta_semana:250}].filter(g=>g.unidades.length);
