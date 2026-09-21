@@ -24,9 +24,9 @@ jobs:
   relatorio:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -61,7 +61,7 @@ jobs:
         run: python scripts/enviar_relatorio.py ${{ steps.modo.outputs.modo }}
 
       - name: Guardar imagens (7 dias)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: relatorio-${{ steps.modo.outputs.modo }}-${{ github.run_id }}
           path: out/*.png
