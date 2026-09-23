@@ -19,6 +19,10 @@ GRUPOS = CFG.get('grupos_relatorio') or [
     {'nome': 'Osasco', 'titulo': 'Relatório de Vendas Osasco', 'unidades': ['OSASCO'], 'meta_semana': int(os.environ.get('META_OSASCO', '250')), 'arquivo': 'relatorio_osasco.png'},
 ]
 REPO = CFG.get('repo', 'matheussouza28/dashboard-vendas-cdt')
+# Endereço público do dashboard (Cloudflare Pages). As imagens publicadas em
+# data/relatorio/ são servidas por ele; o raw.githubusercontent.com para de
+# funcionar quando o repositório fica privado.
+SITE = (CFG.get('site') or 'https://raw.githubusercontent.com/%s/main/' % REPO).rstrip('/') + '/'
 
 now_br = dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=3)
 d = now_br.date() - dt.timedelta(days=1) if modo == 'fechamento' else now_br.date()
@@ -88,7 +92,7 @@ latest = {k: v for k, v in payload.items() if k != 'imagens'}
 latest['id'] = day.replace('-', '') + '-' + modo + '-' + now_br.strftime('%H%M')
 latest['imagens'] = [
     {'nome': g['arquivo'], 'legenda': img['legenda'],
-     'url': 'https://raw.githubusercontent.com/%s/main/data/relatorio/%s' % (REPO, g['arquivo'])}
+     'url': SITE + 'data/relatorio/' + g['arquivo']}
     for img, g in zip(payload['imagens'], GRUPOS)
 ]
 json.dump(latest, open(os.path.join(pub, 'latest.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
