@@ -1,5 +1,5 @@
 {
- "atualizado_em": "24/09/2026 15:00",
+ "atualizado_em": "24/09/2026 15:26",
  "periodo": {
   "inicio": "2026-01-01",
   "fim": "2026-09-24"
@@ -7,7 +7,7 @@
  "unidades": [
   "ALVORADA"
  ],
- "total": 3056,
+ "total": 3058,
  "hoje": "2026-09-24",
  "titulo": "Dashboard de Vendas — Cartão de Todos Alvorada",
  "repo": "matheussouza28/dashboard-vendas-alvorada"
