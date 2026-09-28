@@ -26,7 +26,7 @@ COLS = ['Franquia', 'Matricula', 'Filiado', 'Telefone', 'Nome', 'Data', 'Vendedo
 PREFIXO = {
     'BELEM CENTRO': 'PA417', 'MANAUS CENTRO': 'AM348', 'MANAUS NORTE': 'AM312',
     'PORTO ALEGRE NORTE': 'RS329', 'OSASCO': 'SP266', 'PARINTINS': 'AM443',
-    'ALVORADA': 'RS364',
+    'ALVORADA': 'RS364', 'TUBARAO': 'SC414', 'BOA VISTA': 'RR277',
 }
 
 cookie = os.environ.get('CTN_COOKIE', '').strip()
