@@ -231,7 +231,7 @@ const D=JSON.parse(document.getElementById('data').textContent);
 const UNITS=D.unidades; // fixed order → fixed colors
 const COLORS=['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'];
 const colorOf=u=>COLORS[UNITS.indexOf(u)%COLORS.length];
-const NICE={'BELEM CENTRO':'Belém Centro','MANAUS CENTRO':'Manaus Centro','MANAUS NORTE':'Manaus Norte','OSASCO':'Osasco','PARINTINS':'Parintins','PORTO ALEGRE NORTE':'Porto Alegre Norte','ALVORADA':'Alvorada'};
+const NICE={'BELEM CENTRO':'Belém Centro','MANAUS CENTRO':'Manaus Centro','MANAUS NORTE':'Manaus Norte','OSASCO':'Osasco','PARINTINS':'Parintins','PORTO ALEGRE NORTE':'Porto Alegre Norte','ALVORADA':'Alvorada','TUBARAO':'Tubarão','BOA VISTA':'Boa Vista'};
 const nice=u=>NICE[u]||u;
 const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const MESES_L=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];

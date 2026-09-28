@@ -1,6 +1,6 @@
 {
-  "titulo": "Dashboard de Vendas — Cartão de Todos Alvorada",
-  "unidades": ["CARTAO DE ALVORADA"],
+  "titulo": "Dashboard de Vendas — Cartão de Todos Alvorada, Tubarão e Boa Vista",
+  "unidades": ["CARTAO DE ALVORADA", "CARTAO DE TUBARAO", "CARTAO DE BOA VISTA"],
   "sub_franquia": "4",
   "inicio": "2026-01-01",
   "grupos_relatorio": [
