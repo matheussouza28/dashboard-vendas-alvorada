@@ -6,6 +6,12 @@
   "grupos_relatorio": [
     {"nome": "Alvorada", "titulo": "Relatório de Vendas Alvorada", "unidades": ["ALVORADA"], "meta_semana": 200, "arquivo": "relatorio_alvorada.png"}
   ],
+  "_paginas_unidade": "Uma página por unidade, além do painel geral: /alvorada/, /tubarao/, /boa-vista/. Cada uma só com os dados dela; o acesso é separado no Cloudflare Access por caminho.",
+  "paginas_unidade": {
+    "ALVORADA": {"caminho": "alvorada", "nome": "Alvorada"},
+    "TUBARAO": {"caminho": "tubarao", "nome": "Tubarão"},
+    "BOA VISTA": {"caminho": "boa-vista", "nome": "Boa Vista"}
+  },
   "repo": "matheussouza28/dashboard-vendas-alvorada",
   "site": "https://dashboard-vendas-rs-sc-rr.pages.dev/"
 }
