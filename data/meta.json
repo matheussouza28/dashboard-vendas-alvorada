@@ -1,5 +1,5 @@
 {
- "atualizado_em": "02/10/2026 13:31",
+ "atualizado_em": "02/10/2026 13:37",
  "periodo": {
   "inicio": "2026-01-01",
   "fim": "2026-10-02"
@@ -9,7 +9,7 @@
   "BOA VISTA",
   "TUBARAO"
  ],
- "total": 13602,
+ "total": 13603,
  "hoje": "2026-10-02",
  "titulo": "Dashboard de Vendas — Cartão de Todos Alvorada, Tubarão e Boa Vista",
  "repo": "matheussouza28/dashboard-vendas-alvorada"
