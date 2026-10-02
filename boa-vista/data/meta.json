@@ -1,13 +1,13 @@
 {
- "atualizado_em": "02/10/2026 09:01",
+ "atualizado_em": "02/10/2026 09:31",
  "periodo": {
   "inicio": "2026-01-02",
-  "fim": "2026-10-01"
+  "fim": "2026-10-02"
  },
  "unidades": [
   "BOA VISTA"
  ],
- "total": 7859,
+ "total": 7860,
  "hoje": "2026-10-02",
  "titulo": "Dashboard de Vendas — Cartão de Todos Boa Vista"
 }
