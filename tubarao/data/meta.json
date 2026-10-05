@@ -1,13 +1,13 @@
 {
- "atualizado_em": "05/10/2026 02:44",
+ "atualizado_em": "05/10/2026 06:31",
  "periodo": {
   "inicio": "2026-01-02",
-  "fim": "2026-10-04"
+  "fim": "2026-10-05"
  },
  "unidades": [
   "TUBARAO"
  ],
- "total": 2564,
+ "total": 2565,
  "hoje": "2026-10-05",
  "titulo": "Dashboard de Vendas — Cartão de Todos Tubarão"
 }
