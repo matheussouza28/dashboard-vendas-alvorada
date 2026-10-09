@@ -1,14 +1,14 @@
 {
  "modo": "dia",
  "dia": "2026-10-09",
- "gerado_em": "09/10/2026 14:25",
- "base_atualizada_em": "09/10/2026 14:25",
- "texto": "*Relatório de Vendas Alvorada — 09/10/2026 (parcial até 14:25)*\nMeta da semana: 200 vendas\n\n🥇 ALVORADA: *10*\n\nTotal do dia: *10*\nTotal da semana (07/10 a 13/10): *56*\nFaltam *144* vendas para bater a meta\n\n_Fonte: CTN · base atualizada em 09/10/2026 14:25_",
- "id": "20261009-dia-1425",
+ "gerado_em": "09/10/2026 15:47",
+ "base_atualizada_em": "09/10/2026 15:47",
+ "texto": "*Relatório de Vendas Alvorada — 09/10/2026 (parcial até 15:47)*\nMeta da semana: 200 vendas\n\n🥇 ALVORADA: *12*\n\nTotal do dia: *12*\nTotal da semana (07/10 a 13/10): *58*\nFaltam *142* vendas para bater a meta\n\n_Fonte: CTN · base atualizada em 09/10/2026 15:47_",
+ "id": "20261009-dia-1547",
  "imagens": [
   {
    "nome": "relatorio_alvorada.png",
-   "legenda": "📊 Parcial de 09/10/2026 até 14:25 — Alvorada",
+   "legenda": "📊 Parcial de 09/10/2026 até 15:47 — Alvorada",
    "url": "https://dashboard-vendas-rs-sc-rr.pages.dev/data/relatorio/relatorio_alvorada.png"
   }
  ]
